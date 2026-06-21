@@ -30,6 +30,13 @@ class DockerhubExpire {
   protected bool $dryRun;
 
   /**
+   * TRUE to output GitHub markup for a summary.
+   *
+   * @var bool
+   */
+  protected bool $emitMarkup;
+
+  /**
    * List of regex patterns defining protection rules.
    *
    * A rule consists of a regex and an exipration date in days.
@@ -79,6 +86,13 @@ class DockerhubExpire {
   protected int $timeout = 30;
 
   /**
+   * Stores the run summary.
+   *
+   * @var string
+   */
+  public string $summary = '';
+
+  /**
    * Class constructor, stores parameters in class variables.
    *
    * @param string $username
@@ -94,11 +108,13 @@ class DockerhubExpire {
     string $username,
     string $password,
     string $protectionRules,
+    bool $emitMarkup = FALSE,
     bool $dryRun = TRUE,
   ) {
     $this->username = $username;
     $this->password = $password;
     $this->parseprotectionRules($protectionRules);
+    $this->emitMarkup = $emitMarkup;
     $this->dryRun = $dryRun;
   }
 
@@ -423,6 +439,13 @@ class DockerhubExpire {
     $this->log('  Digests deleted: ' . $deleted . $dryRunMessage);
     $this->log('  Digests kept: ' . $kept);
     $this->log('  Total digests: ' . count($digests));
+
+    if ($this->emitMarkup) {
+      $this->summary .= "\n# Results for \"$repository\"\n";
+      $this->summary .= '- **Digests deleted**: ' . $deleted . $dryRunMessage . "\n";
+      $this->summary .= '- **Digests kept**: ' . $kept . "\n";
+      $this->summary .= '- **Total digests**: ' . count($digests) . "\n";
+    }
   }
 
 }
@@ -439,6 +462,7 @@ $password = getenv('DOCKERHUB_PASSWORD');
 $options = getopt('', [
   'repositories:',
   'rules:',
+  'summary-markup',
   'dry-run',
 ]);
 
@@ -468,6 +492,7 @@ $cleaner = new DockerhubExpire(
   $username,
   $password,
   $options['rules'],
+  isset($options['summary-markup']),
   isset($options['dry-run']),
 );
 
@@ -475,4 +500,8 @@ $repositories = preg_split('/,\s*/', $options['repositories']);
 
 foreach ($repositories as $repository) {
   $cleaner->cleanupRepository($repository);
+}
+
+if (isset($options['summary-markup'])) {
+  print $cleaner->summary;
 }

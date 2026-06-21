@@ -1,0 +1,29 @@
+name: 'Remove obsolete images from DockerHub'
+
+on:
+  # To allow manual run.
+  workflow_dispatch:
+  schedule:
+    # Run at 1am every morning, 1 hour before images are built.
+    - cron: '0 5 * * *'
+  # This next trigger is temporary for testing!
+  # pull_request:
+
+permissions: 'read-all'
+
+jobs:
+  clean_dockerhub:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v6'
+
+      - name: 'Docker Hub Cleanup'
+        #uses: 'tripal/dockerhub-expire@v1
+        uses: ./action.yml
+        with:
+          # The first custom pattern matched has priority.
+          repositories: 'tripalproject/tripaldocker-drupal, tripalproject/tripaldocker'
+          username: '${{ secrets.DOCKERHUB_USERNAME }}'
+          password: '${{ secrets.DOCKERHUB_PERSONAL_ACCESS_TOKEN_RWD }}'
+          rules: 'BUILT:0, drupal, latest'
+          dry-run: true
