@@ -60,7 +60,7 @@ runs:
           $DRY_RUN_FLAG \
           --summary-markup > summary-markup.txt
 
-        if [ -f expire-summary.json ]; then
+        if [ -f summary-markup.txt ]; then
           echo "## Final Summary" >> $GITHUB_STEP_SUMMARY
           cat "summary-markup.txt" >> $GITHUB_STEP_SUMMARY
         fi
@@ -69,8 +69,7 @@ runs:
       if: always()
       shell: bash
       run: |
-        echo "## DockerHub Cleanup Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        if [ -f expire-summary.json ]; then
+        if [ -f summary-markup.txt ]; then
+          echo "## DockerHub Cleanup Summary" >> $GITHUB_STEP_SUMMARY
           cat "summary-markup.txt" >> $GITHUB_STEP_SUMMARY
         fi
