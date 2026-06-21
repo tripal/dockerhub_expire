@@ -319,7 +319,7 @@ class DockerhubExpire {
     $token = $this->getBearerToken($namespace, $repo);
     $short_sha = substr($digest, 7, 7);
     if ($this->dryRun) {
-      $this->log("[DRY RUN] Would delete $short_sha $namespace/$repo:$tags");
+      $this->log("[DRY RUN] Would delete $short_sha $repo:$tags");
       return TRUE;
     }
 
@@ -332,11 +332,11 @@ class DockerhubExpire {
     );
 
     if ($code2 === 202) {
-      $this->log("Deleted digest $short_sha $namespace/$repo:$tags");
+      $this->log("Deleted digest $short_sha $repo:$tags");
       return TRUE;
     }
     else {
-      $this->log("Error, response code $code2 trying to delete digest \"$digest\" $namespace/$repo:$tags\n$response2");
+      $this->log("Error, response code $code2 trying to delete digest \"$digest\" $repo:$tags\n$response2");
       return FALSE;
     }
   }
@@ -431,7 +431,7 @@ class DockerhubExpire {
       }
     }
 
-    $this->log("Summary for repository \"$repository\":");
+    $this->log("Summary for repository \"$repo\":");
     $dryRunMessage = '';
     if ($this->dryRun) {
       $dryRunMessage = ' (This was a dry run. No digests were actually deleted)';
@@ -441,7 +441,7 @@ class DockerhubExpire {
     $this->log('  Total digests: ' . count($digests));
 
     if ($this->emitMarkup) {
-      $this->summary .= "\n# Results for \"$repository\"\n";
+      $this->summary .= "\n# Results for \"$repo\"\n";
       $this->summary .= '- **Digests deleted**: ' . $deleted . $dryRunMessage . "\n";
       $this->summary .= '- **Digests kept**: ' . $kept . "\n";
       $this->summary .= '- **Total digests**: ' . count($digests) . "\n";

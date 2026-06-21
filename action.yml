@@ -61,15 +61,6 @@ runs:
           --summary-markup > summary-markup.txt
 
         if [ -f summary-markup.txt ]; then
-          echo "## Final Summary" >> $GITHUB_STEP_SUMMARY
-          cat "summary-markup.txt" >> $GITHUB_STEP_SUMMARY
-        fi
-
-    - name: 'Generate final summary'
-      if: always()
-      shell: bash
-      run: |
-        if [ -f summary-markup.txt ]; then
-          echo "## DockerHub Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Overall Summary" >> $GITHUB_STEP_SUMMARY
           cat "summary-markup.txt" >> $GITHUB_STEP_SUMMARY
         fi
