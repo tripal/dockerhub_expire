@@ -19,7 +19,7 @@ jobs:
 
       - name: 'Docker Hub Cleanup'
         #uses: 'tripal/dockerhub-expire@v1
-        uses: ./action.yml
+        uses: ./
         with:
           # The first custom pattern matched has priority.
           repositories: 'tripalproject/tripaldocker-drupal, tripalproject/tripaldocker'
