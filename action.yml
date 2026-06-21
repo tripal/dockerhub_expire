@@ -54,7 +54,7 @@ runs:
         fi
 
         # Run the cleanup script
-        php ${{ github.action_path }}/scripts/dockerhub-expire.php \
+        php ${{ github.action_path }}/scripts/DockerhubExpire.php \
           --repositories "${{ inputs.repositories }}" \
           --rules "${{ inputs.rules }}" \
           $DRY_RUN_FLAG \
