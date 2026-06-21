@@ -101,6 +101,8 @@ class DockerhubExpire {
    *   DockerHub password or personal access token.
    * @param string $protectionRules
    *   One or more regex with expiration in days.
+   * @param bool $emitMarkup
+   *   If TRUE, output a summary in github markup format to stdout.
    * @param bool $dryRun
    *   If TRUE, no changes will be made.
    */
@@ -441,7 +443,7 @@ class DockerhubExpire {
     $this->log('  Total digests: ' . count($digests));
 
     if ($this->emitMarkup) {
-      $this->summary .= "\n# Results for \"$repo\"\n";
+      $this->summary .= "\n### Results for \"$repo\"\n";
       $this->summary .= '- **Digests deleted**: ' . $deleted . $dryRunMessage . "\n";
       $this->summary .= '- **Digests kept**: ' . $kept . "\n";
       $this->summary .= '- **Total digests**: ' . count($digests) . "\n";

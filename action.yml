@@ -16,7 +16,7 @@ inputs:
     required: true
 
   repositories:
-    description: 'Comma-separated list of repository names to process'
+    description: 'Comma-delimited list of repository names to process'
     required: true
 
   rules:
@@ -42,15 +42,15 @@ runs:
         php-version: '8.5'
 
     - name: 'Run DockerHub Expire'
-      shell: bash
+      shell: 'bash'
       env:
         DOCKERHUB_USERNAME: ${{ inputs.username }}
         DOCKERHUB_PASSWORD: ${{ inputs.password }}
       run: |
         # Set flags based on inputs
         DRY_RUN_FLAG=""
-        if [ "${{ inputs.dry-run }}" = "true" ]; then
-          DRY_RUN_FLAG="--dry-run"
+        if [ "${{ inputs.dry-run }}" = 'true' ]; then
+          DRY_RUN_FLAG='--dry-run'
         fi
 
         # Run the cleanup script
@@ -58,9 +58,9 @@ runs:
           --repositories "${{ inputs.repositories }}" \
           --rules "${{ inputs.rules }}" \
           $DRY_RUN_FLAG \
-          --summary-markup > summary-markup.txt
+          --summary-markup > 'summary-markup.txt'
 
         if [ -f summary-markup.txt ]; then
-          echo "## Overall Summary" >> $GITHUB_STEP_SUMMARY
-          cat "summary-markup.txt" >> $GITHUB_STEP_SUMMARY
+          echo '## Job Summary' >> $GITHUB_STEP_SUMMARY
+          cat 'summary-markup.txt' >> $GITHUB_STEP_SUMMARY
         fi
