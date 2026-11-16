@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Used by Github action to remove old images from Docker Hub.
  *
@@ -266,6 +265,12 @@ class DockerhubExpire {
       [$code, $response] = $this->httpRequest('GET', $url, [
         'Authorization: ' . $this->basicAuth(),
       ]);
+
+      // We may get a 403 code when we hit the end of the list.
+      if ($code == 403) {
+        $this->log('Notice, 403 code, assuming end of list for "' . $namespace . '/' . $repo . '"');
+        break;
+      }
       if ($code !== 200) {
         $this->log('Error, failed to get digest tags for "' . $namespace . '/' . $repo . '", error code: ' . $code);
         return [];
@@ -279,7 +284,7 @@ class DockerhubExpire {
 
       // Stores in an array indexed by digest sha as the first key.
       foreach ($tags as $tag) {
-        $digest_id = $tag['images'][0]['digest'];
+        $digest_id = $tag['digest'];
         $digests[$digest_id][] = $tag;
         $ntags++;
       }
@@ -332,6 +337,22 @@ class DockerhubExpire {
         'Authorization: Bearer ' . $token,
       ]
     );
+
+    // If our token has expired, we will see a 401 code. See issue #1.
+    // Get a new token and retry.
+    if ($code2 === 401) {
+      // Clear existing tokens from cache.
+      $this->log('Notice, token expired, getting a new token.');
+      $this->tokens = [];
+      $token = $this->getBearerToken($namespace, $repo);
+      // Retry.
+      [$code2, $response2] = $this->httpRequest('DELETE',
+        $this->registryUrl . '/' . $namespace . '/' . $repo . '/manifests/' . $digest,
+        [
+          'Authorization: Bearer ' . $token,
+        ]
+      );
+    }
 
     if ($code2 === 202) {
       $this->log("Deleted digest $short_sha $repo:$tags");
