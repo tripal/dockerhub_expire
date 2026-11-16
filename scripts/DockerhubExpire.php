@@ -284,7 +284,7 @@ class DockerhubExpire {
 
       // Stores in an array indexed by digest sha as the first key.
       foreach ($tags as $tag) {
-        $digest_id = $tag['images'][0]['digest'];
+        $digest_id = $tag['digest'];
         $digests[$digest_id][] = $tag;
         $ntags++;
       }
